@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampaignOS — Technical Documentation</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f8f9fc;
+    --surface: #ffffff;
+    --border: #e4e8f0;
+    --border-strong: #c9d0e0;
+    --text: #1a1f2e;
+    --text-2: #4a5165;
+    --text-3: #8891aa;
+    --blue: #2563eb;
+    --blue-light: #eff4ff;
+    --blue-mid: #dbeafe;
+    --green: #059669;
+    --green-light: #ecfdf5;
+    --amber: #d97706;
+    --amber-light: #fffbeb;
+    --red: #dc2626;
+    --red-light: #fef2f2;
+    --purple: #7c3aed;
+    --purple-light: #f5f3ff;
+    --code-bg: #f1f4f9;
+    --heading-bar: #2563eb;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  /* ── Layout ── */
+  .sidebar {
+    position: fixed; top: 0; left: 0; width: 240px; height: 100vh;
+    background: var(--surface); border-right: 1px solid var(--border);
+    overflow-y: auto; padding: 24px 0; z-index: 100;
+  }
+  .sidebar-logo {
+    padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 12px;
+  }
+  .sidebar-logo .mark {
+    width: 32px; height: 32px; background: var(--blue); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700; font-size: 14px; margin-bottom: 8px;
+  }
+  .sidebar-logo h1 { font-size: 15px; font-weight: 700; color: var(--text); }
+  .sidebar-logo p { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+  .nav-section { padding: 4px 0; }
+  .nav-section-label {
+    font-size: 10px; font-weight: 600; color: var(--text-3);
+    text-transform: uppercase; letter-spacing: .08em;
+    padding: 8px 20px 4px;
+  }
+  .nav-link {
+    display: block; padding: 6px 20px; font-size: 12.5px; color: var(--text-2);
+    text-decoration: none; transition: all .15s; border-left: 2px solid transparent;
+  }
+  .nav-link:hover { color: var(--blue); background: var(--blue-light); border-left-color: var(--blue); }
+
+  .main { margin-left: 240px; padding: 48px 56px; max-width: 1000px; }
+
+  /* ── Cover ── */
+  .cover {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #2563eb 100%);
+    border-radius: 16px; padding: 52px 48px; margin-bottom: 48px; color: white;
+    position: relative; overflow: hidden;
+  }
+  .cover::before {
+    content: ''; position: absolute; top: -60px; right: -60px;
+    width: 300px; height: 300px; border-radius: 50%;
+    background: rgba(255,255,255,.06); pointer-events: none;
+  }
+  .cover::after {
+    content: ''; position: absolute; bottom: -40px; left: 40%;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04); pointer-events: none;
+  }
+  .cover h1 { font-size: 36px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 8px; }
+  .cover p { font-size: 16px; color: rgba(255,255,255,.75); margin-bottom: 28px; }
+  .cover-meta { display: flex; gap: 24px; flex-wrap: wrap; }
+  .cover-meta span { font-size: 12px; color: rgba(255,255,255,.6); }
+  .cover-meta strong { color: rgba(255,255,255,.9); }
+  .cover-pills { display: flex; gap: 8px; margin-top: 24px; flex-wrap: wrap; }
+  .cover-pill {
+    background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
+    color: white; font-size: 11px; padding: 4px 12px; border-radius: 100px; font-weight: 500;
+  }
+
+  /* ── Sections ── */
+  .section { margin-bottom: 56px; }
+  .section-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
+    padding-bottom: 12px; border-bottom: 2px solid var(--border);
+  }
+  .section-num {
+    width: 28px; height: 28px; background: var(--blue); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 11px; font-weight: 700; flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .section-header h2 { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -.01em; }
+  .subsection { margin-bottom: 32px; }
+  .subsection h3 {
+    font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 12px;
+    padding-left: 10px; border-left: 3px solid var(--blue);
+  }
+  .subsection h4 { font-size: 13px; font-weight: 600; color: var(--text-2); margin: 16px 0 8px; }
+
+  p { color: var(--text-2); margin-bottom: 12px; }
+
+  /* ── Callout ── */
+  .callout {
+    border-radius: 10px; padding: 16px 20px; margin-bottom: 20px;
+    border-left: 4px solid; display: flex; gap: 12px; align-items: flex-start;
+  }
+  .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .callout-body { flex: 1; }
+  .callout-title { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+  .callout-text { font-size: 13px; line-height: 1.6; }
+  .callout.blue { background: var(--blue-light); border-color: var(--blue); }
+  .callout.blue .callout-title { color: var(--blue); }
+  .callout.blue .callout-text { color: #1e40af; }
+  .callout.green { background: var(--green-light); border-color: var(--green); }
+  .callout.green .callout-title { color: var(--green); }
+  .callout.green .callout-text { color: #065f46; }
+  .callout.amber { background: var(--amber-light); border-color: var(--amber); }
+  .callout.amber .callout-title { color: var(--amber); }
+  .callout.amber .callout-text { color: #92400e; }
+  .callout.red { background: var(--red-light); border-color: var(--red); }
+  .callout.red .callout-title { color: var(--red); }
+  .callout.red .callout-text { color: #991b1b; }
+
+  /* ── Tables ── */
+  .table-wrap { overflow-x: auto; margin-bottom: 20px; border-radius: 10px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead tr { background: #f1f5fb; }
+  th {
+    text-align: left; padding: 10px 14px; font-weight: 600; font-size: 11.5px;
+    color: var(--text-2); text-transform: uppercase; letter-spacing: .04em;
+    border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text-2); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #fafbfd; }
+  td strong { color: var(--text); font-weight: 600; }
+  .yes  { color: var(--green); font-weight: 600; }
+  .no   { color: var(--red); font-weight: 600; }
+  .warn { color: var(--amber); font-weight: 600; }
+  .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .score-bar { display: flex; gap: 3px; }
+  .dot { width: 10px; height: 10px; border-radius: 2px; }
+  .dot.on  { background: var(--blue); }
+  .dot.off { background: var(--border-strong); }
+
+  /* ── Code ── */
+  .code-block {
+    background: #0f1724; border-radius: 10px; padding: 20px 24px; margin-bottom: 20px;
+    overflow-x: auto; position: relative;
+  }
+  .code-label {
+    font-size: 10px; font-weight: 600; color: #4a5568; text-transform: uppercase;
+    letter-spacing: .08em; margin-bottom: 12px; font-family: 'JetBrains Mono', monospace;
+  }
+  pre { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.7; color: #e2e8f0; white-space: pre; }
+  .kw  { color: #7dd3fc; }
+  .str { color: #86efac; }
+  .cmt { color: #64748b; font-style: italic; }
+  .fn  { color: #fbbf24; }
+  .prop{ color: #c4b5fd; }
+  .num { color: #fb923c; }
+
+  /* ── Badge ── */
+  .badge {
+    display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px;
+    border-radius: 100px; border: 1px solid; white-space: nowrap;
+  }
+  .badge-blue   { background: var(--blue-light);   color: var(--blue);   border-color: #bfdbfe; }
+  .badge-green  { background: var(--green-light);  color: var(--green);  border-color: #a7f3d0; }
+  .badge-amber  { background: var(--amber-light);  color: var(--amber);  border-color: #fde68a; }
+  .badge-red    { background: var(--red-light);    color: var(--red);    border-color: #fecaca; }
+  .badge-purple { background: var(--purple-light); color: var(--purple); border-color: #ddd6fe; }
+  .badge-slate  { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+
+  /* ── Flow steps ── */
+  .flow { display: flex; flex-direction: column; gap: 0; margin-bottom: 20px; }
+  .flow-step {
+    display: flex; gap: 16px; align-items: flex-start; padding: 16px 0;
+    border-bottom: 1px solid var(--border); position: relative;
+  }
+  .flow-step:last-child { border-bottom: none; }
+  .flow-num {
+    width: 28px; height: 28px; border-radius: 50%; background: var(--blue);
+    color: white; font-size: 11px; font-weight: 700; display: flex;
+    align-items: center; justify-content: center; flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .flow-content h4 { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .flow-content p  { font-size: 12.5px; color: var(--text-2); margin: 0; }
+
+  /* ── Option cards ── */
+  .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .option-card {
+    border: 1px solid var(--border); border-radius: 12px; padding: 20px;
+    background: var(--surface); transition: box-shadow .2s;
+  }
+  .option-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.06); }
+  .option-card.recommended { border-color: #86efac; background: #f0fdf4; }
+  .option-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+  .option-name { font-size: 15px; font-weight: 700; color: var(--text); }
+  .option-desc { font-size: 12.5px; color: var(--text-2); margin-bottom: 14px; line-height: 1.6; }
+  .scores { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .score-row { display: flex; flex-direction: column; gap: 4px; }
+  .score-label { font-size: 10.5px; color: var(--text-3); font-weight: 500; }
+  .pros-cons { display: flex; flex-direction: column; gap: 4px; }
+  .pro  { font-size: 12px; color: #065f46; padding-left: 16px; position: relative; }
+  .con  { font-size: 12px; color: #9a3412; padding-left: 16px; position: relative; }
+  .pro::before { content: '+'; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+  .con::before { content: '−'; position: absolute; left: 0; color: var(--red); font-weight: 700; }
+
+  /* ── Layer stack ── */
+  .layer-stack { display: flex; flex-direction: column; gap: 2px; margin-bottom: 20px; }
+  .layer {
+    border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px;
+    background: var(--surface); transition: all .15s;
+  }
+  .layer:hover { border-color: var(--blue); background: var(--blue-light); }
+  .layer-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .layer-num { font-size: 10px; font-weight: 700; color: var(--text-3); font-family: 'JetBrains Mono', monospace; }
+  .layer-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .layer-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .layer-arrow { text-align: center; color: var(--text-3); font-size: 12px; padding: 2px 0; }
+
+  /* ── List styles ── */
+  ul.doc-list, ol.doc-list { padding-left: 20px; margin-bottom: 16px; }
+  ul.doc-list li, ol.doc-list li { color: var(--text-2); font-size: 13.5px; margin-bottom: 6px; }
+  ul.doc-list li::marker { color: var(--blue); }
+
+  /* ── Divider ── */
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+  /* ── Print / copy helper ── */
+  .copy-btn {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--blue); color: white; border: none; border-radius: 10px;
+    padding: 10px 18px; font-size: 13px; font-weight: 600; cursor: pointer;
+    font-family: 'Sora', sans-serif; box-shadow: 0 4px 16px rgba(37,99,235,.35);
+    transition: all .2s; z-index: 200;
+  }
+  .copy-btn:hover { background: #1d4ed8; transform: translateY(-1px); }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 24px 20px; }
+    .option-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Sidebar ── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="mark">C</div>
+    <h1>CampaignOS</h1>
+    <p>Technical Documentation v2.0</p>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Overview</div>
+    <a class="nav-link" href="#exec">1. Executive Summary</a>
+    <a class="nav-link" href="#flow">2. User Flow</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Architecture</div>
+    <a class="nav-link" href="#comparison">3. Approach Comparison</a>
+    <a class="nav-link" href="#buildvsbuy">4. Build vs Buy</a>
+    <a class="nav-link" href="#architecture">5. System Architecture</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Implementation</div>
+    <a class="nav-link" href="#campaigns">6. Campaign Generation</a>
+    <a class="nav-link" href="#stack">7. Tech Stack</a>
+    <a class="nav-link" href="#deployment">8. Deployment</a>
+    <a class="nav-link" href="#mcp">9. MCP Server</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Governance</div>
+    <a class="nav-link" href="#security">10. Security</a>
+    <a class="nav-link" href="#risks">11. Risks</a>
+    <a class="nav-link" href="#nextsteps">12. Next Steps</a>
+    <a class="nav-link" href="#appendix">13. Appendix</a>
+  </div>
+</nav>
+
+<!-- ── Main ── -->
+<main class="main">
+
+  <!-- Cover -->
+  <div class="cover">
+    <h1>CampaignOS</h1>
+    <p>AI-Native Multi-Tenant Marketing Platform — Complete Technical Specification</p>
+    <div class="cover-meta">
+      <span><strong>Version</strong> 2.0</span>
+      <span><strong>Status</strong> Draft for Review</span>
+      <span><strong>Updated</strong> April 2025</span>
+      <span><strong>Owner</strong> Product &amp; Engineering</span>
+    </div>
+    <div class="cover-pills">
+      <span class="cover-pill">Claude MCP</span>
+      <span class="cover-pill">Multi-tenant</span>
+      <span class="cover-pill">14-week build</span>
+      <span class="cover-pill">$300–600/mo ops</span>
+    </div>
+  </div>
+
+  <!-- ── 1. Executive Summary ── -->
+  <section class="section" id="exec">
+    <div class="section-header">
+      <div class="section-num">01</div>
+      <h2>Executive Summary</h2>
+    </div>
+
+    <p>CampaignOS converts a website URL and advertising budget into a fully planned, copy-written, multi-platform ad campaign — and publishes it with explicit user consent via MCP connectors. Enter a URL and a budget. Get a complete, publishable campaign in under 5 minutes.</p>
+
+    <div class="callout blue">
+      <div class="callout-icon">🏗️</div>
+      <div class="callout-body">
+        <div class="callout-title">Architecture Decision</div>
+        <div class="callout-text">Proceed with <strong>Claude MCP</strong> as the orchestration layer. Build Phase 1 (brand analysis + AI campaign generation) independently of ad connectors, validating the AI reasoning layer before integrating real ad spend. Use existing OAuth SDKs for connectors — not raw API calls.</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3>Core Capabilities</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Capability</th><th>Description</th><th>AI Layer</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Brand Intelligence</strong></td><td>Scrapes any URL; extracts design tokens, tone, colours, audience signals</td><td><span class="badge badge-blue">Claude Vision</span></td></tr>
+            <tr><td><strong>Persona Engine</strong></td><td>3–5 personas with platform affinity, messaging hooks, and budget splits</td><td><span class="badge badge-blue">Claude API</span></td></tr>
+            <tr><td><strong>Campaign Generator</strong></td><td>Per-persona × per-platform: headline, copy, CTA, targeting params, KPIs</td><td><span class="badge badge-blue">Claude API</span></td></tr>
+            <tr><td><strong>Copy Variant Engine</strong></td><td>3 variants per campaign: Direct, Curiosity, Social Proof + live ad previews</td><td><span class="badge badge-blue">Claude API</span></td></tr>
+            <tr><td><strong>MCP Connectors</strong></td><td>Publishes to Google Ads, Meta, LinkedIn, X via OAuth. Consent-gated.</td><td><span class="badge badge-purple">MCP Server</span></td></tr>
+            <tr><td><strong>Multi-tenant Core</strong></td><td>Full workspace isolation per agency/brand. RBAC: Owner / Manager / Viewer</td><td><span class="badge badge-slate">Postgres RLS</span></td></tr>
+            <tr><td><strong>Live Analytics</strong></td><td>Unified performance dashboard. Budget pacing alerts.</td><td><span class="badge badge-slate">Webhooks</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3>Key Metrics</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Platforms</th><th>Avg Setup Time</th><th>Campaign Types</th><th>MCP Tools</th></tr></thead>
+          <tbody><tr><td><strong>6</strong></td><td><strong>4 minutes</strong></td><td><strong>18</strong></td><td><strong>14</strong></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ── 2. User Flow ── -->
+  <section class="section" id="flow">
+    <div class="section-header">
+      <div class="section-num">02</div>
+      <h2>User Flow</h2>
+    </div>
+
+    <div class="flow">
+      <div class="flow-step"><div class="flow-num">01</div><div class="flow-content"><h4>Intake <span class="badge badge-slate">30 seconds</span></h4><p>Enter website URL, set monthly budget ($500–$50K), select target ad platforms.</p></div></div>
+      <div class="flow-step"><div class="flow-num">02</div><div class="flow-content"><h4>Brand Analysis <span class="badge badge-blue">Claude Vision</span></h4><p>Platform scrapes the URL and extracts industry, tone, brand colours, audience, USP, and keywords. Results stream live to the UI.</p></div></div>
+      <div class="flow-step"><div class="flow-num">03</div><div class="flow-content"><h4>Persona Review <span class="badge badge-slate">Editable</span></h4><p>4 AI-generated personas with messaging hooks and budget % splits. Toggle personas in/out or regenerate any individual one.</p></div></div>
+      <div class="flow-step"><div class="flow-num">04</div><div class="flow-content"><h4>Campaign Generation <span class="badge badge-blue">AI Copy</span></h4><p>Per-persona × per-platform campaigns: headline, body copy, CTA, targeting params, estimated CTR/CPC/reach.</p></div></div>
+      <div class="flow-step"><div class="flow-num">05</div><div class="flow-content"><h4>Creatives + Preview <span class="badge badge-slate">3 variants</span></h4><p>Direct / Curiosity / Social Proof copy variants with live platform-accurate ad previews for Google, Meta, LinkedIn, and X.</p></div></div>
+      <div class="flow-step"><div class="flow-num">06</div><div class="flow-content"><h4>Publish + Track <span class="badge badge-amber">Consent-gated</span></h4><p>OAuth connect → Preview → Explicit "Authorize &amp; Publish" → MCP tool call → Audit log entry → Live performance tracking.</p></div></div>
+    </div>
+
+    <div class="subsection">
+      <h3>UX Principles</h3>
+      <ol class="doc-list">
+        <li><strong>Transparency first</strong> — Always show what the AI extracted. Never black-box a step.</li>
+        <li><strong>Editability at every level</strong> — Personas, copy, budget splits, targeting are all editable inline.</li>
+        <li><strong>Granular regeneration</strong> — Regenerate at any level: this persona, this platform, this copy variant.</li>
+        <li><strong>Consent is explicit, never implied</strong> — OAuth connect and publish are two separate clicks, always.</li>
+        <li><strong>Draft before spend</strong> — Campaigns land as drafts on ad platforms. No money moves until the user confirms.</li>
+      </ol>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ── 3. Comparison ── -->
+  <section class="section" id="comparison">
+    <div class="section-header">
+      <div class="section-num">03</div>
+      <h2>Architecture Approach Comparison</h2>
+    </div>
+
+    <div class="option-grid">
+      <!-- MCP -->
+      <div class="option-card recommended">
+        <div class="option-header">
+          <div class="option-name">Claude MCP</div>
+          <span class="badge badge-green">Recommended</span>
+        </div>
+        <div class="option-desc">Claude as orchestrator with MCP tools wrapping ad platform APIs. Claude reasons over campaign decisions and platform constraints simultaneously.</div>
+        <div class="scores">
+          <div class="score-row"><div class="score-label">Complexity</div><div class="score-bar"><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot off"></div><div class="dot off"></div></div></div>
+          <div class="score-row"><div class="score-label">Flexibility</div><div class="score-bar"><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div></div></div>
+          <div class="score-row"><div class="score-label">Dev Speed</div><div class="score-bar"><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot off"></div></div></div>
+          <div class="score-row"><div class="score-label">Cost Eff.</div><div class="score-bar"><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot off"></div></div></div>
+        </div>
+        <div class="pros-cons">
+          <div class="pro">Native tool-calling — no orchestration glue code</div>
+          <div class="pro">Reasons over decisions + constraints simultaneously</div>
+          <div class="pro">MCP tools reusable across any Claude surface</div>
+          <div class="con">MCP ecosystem still maturing</div>
+          <div class="con">Requires managing an MCP server process</div>
+        </div>
+      </div>
+
+      <!-- LangGraph -->
+      <div class="option-card">
+        <div class="option-header">
+          <div class="option-name">LangGraph + API</div>
+          <span class="badge badge-blue">Alternative</span>
+        </div>
+        <div class="option-desc">Custom orchestration using LangGraph, calling Claude API directly alongside ad platform REST APIs.</div>
+        <div class="scores">
+          <div class="score-row"><div class="score-label">Complexity</div><div class="score-bar"><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot off"></div></div></div>
+          <div class="score-row"><div class="score-label">Flexibility</div><div class="score-bar"><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div></div></div>
+          <div class="score-row"><div class="score-label">Dev Speed</div><div class="score-bar"><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot off"></div><div class="dot off"></div></div></div>
+          <div class="score-row"><div class="score-label">Cost Eff.</div><div class="score-bar"><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot off"></div><div class="dot off"></div></div></div>
+        </div>
+        <div class="pros-cons">
+          <div class="pro">Full control over every pipeline step</div>
+          <div class="pro">Explicit state machine for complex flows</div>
+          <div class="con">More boilerplate per tool</div>
+          <div class="con">State management grows non-linearly</div>
+        </div>
+      </div>
+
+      <!-- Vercel AI -->
+      <div class="option-card">
+        <div class="option-header">
+          <div class="option-name">Vercel AI SDK</div>
+          <span class="badge badge-amber">Fastest Start</span>
+        </div>
+        <div class="option-desc">useChat / useCompletion hooks with server actions. Great for prototyping, not suited for background jobs.</div>
+        <div class="scores">
+          <div class="score-row"><div class="score-label">Complexity</div><div class="score-bar"><div class="dot on"></div><div class="dot on"></div><div class="dot off"></div><div class="dot off"></div><div class="dot off"></div></div></div>
+          <div class="score-row"><div class="score-label">Flexibility</div><div class="score-bar"><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot off"></div><div class="dot off"></div></div></div>
+          <div class="score-row"><div class="score-label">Dev Speed</div><div class="score-bar"><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div></div></div>
+          <div class="score-row"><div class="score-label">Cost Eff.</div><div class="score-bar"><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot off"></div></div></div>
+        </div>
+        <div class="pros-cons">
+          <div class="pro">Fastest time-to-demo</div>
+          <div class="pro">Built-in streaming and tool calls</div>
+          <div class="con">Not for long-running background jobs</div>
+          <div class="con">Harder to scale multi-tenant isolation</div>
+        </div>
+      </div>
+
+      <!-- n8n -->
+      <div class="option-card">
+        <div class="option-header">
+          <div class="option-name">n8n / Make</div>
+          <span class="badge badge-purple">No-code</span>
+        </div>
+        <div class="option-desc">Workflow automation with pre-built ad platform connectors. AI nodes available but shallow.</div>
+        <div class="scores">
+          <div class="score-row"><div class="score-label">Complexity</div><div class="score-bar"><div class="dot on"></div><div class="dot off"></div><div class="dot off"></div><div class="dot off"></div><div class="dot off"></div></div></div>
+          <div class="score-row"><div class="score-label">Flexibility</div><div class="score-bar"><div class="dot on"></div><div class="dot on"></div><div class="dot off"></div><div class="dot off"></div><div class="dot off"></div></div></div>
+          <div class="score-row"><div class="score-label">Dev Speed</div><div class="score-bar"><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div></div></div>
+          <div class="score-row"><div class="score-label">Cost Eff.</div><div class="score-bar"><div class="dot on"></div><div class="dot on"></div><div class="dot off"></div><div class="dot off"></div><div class="dot off"></div></div></div>
+        </div>
+        <div class="pros-cons">
+          <div class="pro">Pre-built ad platform connectors</div>
+          <div class="pro">Non-technical users can modify</div>
+          <div class="con">AI reasoning is shallow — no brand analysis</div>
+          <div class="con">No multi-tenant isolation</div>
+          <div class="con">Expensive and inflexible at scale</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3>Decision Matrix</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Criterion</th><th>Claude MCP</th><th>LangGraph</th><th>Vercel AI</th><th>n8n / Make</th></tr></thead>
+          <tbody>
+            <tr><td>Multi-tenant isolation</td><td class="yes">✅ Native RLS</td><td class="yes">✅ Custom</td><td class="warn">⚠️ Partial</td><td class="no">❌ Manual</td></tr>
+            <tr><td>AI reasoning depth</td><td class="yes">✅ Full chain</td><td class="yes">✅ Full chain</td><td class="warn">⚠️ Medium</td><td class="no">❌ Shallow</td></tr>
+            <tr><td>Ad platform connectors</td><td class="yes">✅ via MCP</td><td class="yes">✅ via SDK</td><td class="warn">⚠️ via SDK</td><td class="yes">✅ Built-in</td></tr>
+            <tr><td>Background job support</td><td class="yes">✅ BullMQ</td><td class="yes">✅ Queue</td><td class="no">❌ Limited</td><td class="yes">✅ Built-in</td></tr>
+            <tr><td>White-label ready</td><td class="yes">✅</td><td class="yes">✅</td><td class="warn">⚠️</td><td class="no">❌</td></tr>
+            <tr><td>Consent / audit layer</td><td class="yes">✅ Native</td><td class="yes">✅ Custom</td><td class="warn">⚠️</td><td class="no">❌</td></tr>
+            <tr><td>Time to MVP</td><td>3–4 weeks</td><td>4–6 weeks</td><td>1–2 weeks</td><td>1 week</td></tr>
+            <tr><td>Monthly infra cost</td><td>$80–$200</td><td>$100–$300</td><td>$50–$150</td><td>$200–$500</td></tr>
+            <tr><td>Vendor lock-in</td><td class="yes">Low</td><td class="yes">Low</td><td class="warn">Medium</td><td class="no">High</td></tr>
+            <tr><td>IP ownership</td><td class="yes">Full</td><td class="yes">Full</td><td class="yes">Full</td><td class="warn">Partial</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ── 4. Build vs Buy ── -->
+  <section class="section" id="buildvsbuy">
+    <div class="section-header">
+      <div class="section-num">04</div>
+      <h2>Build vs Buy Analysis</h2>
+    </div>
+
+    <div class="subsection">
+      <h3>14-Week Build Roadmap</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Phase</th><th>Timeline</th><th>Deliverables</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Phase 1 — Core AI + Intake</strong></td><td><span class="badge badge-slate">Wk 1–3</span></td><td>Brand scraper (Puppeteer + Claude Vision), Persona generator, Campaign planner, Copy variant engine, Basic Next.js UI</td></tr>
+            <tr><td><strong>Phase 2 — Multi-tenant + Auth</strong></td><td><span class="badge badge-slate">Wk 4–5</span></td><td>NextAuth + workspace isolation, Postgres RLS policies, RBAC (Owner / Manager / Viewer), Client management UI</td></tr>
+            <tr><td><strong>Phase 3 — MCP Connectors</strong></td><td><span class="badge badge-slate">Wk 6–8</span></td><td>MCP Server setup, Google Ads OAuth + draft creation, Meta Marketing API, LinkedIn Ads API</td></tr>
+            <tr><td><strong>Phase 4 — Publish + Analytics</strong></td><td><span class="badge badge-slate">Wk 9–11</span></td><td>Consent-gate publish flow, Performance pull-back, Budget pacing alerts, Unified analytics dashboard</td></tr>
+            <tr><td><strong>Phase 5 — Polish + Scale</strong></td><td><span class="badge badge-slate">Wk 12–14</span></td><td>White-label theming, API product layer, Monitoring + alerting, Documentation</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3>Cost Breakdown</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Line Item</th><th>Estimated Cost</th></tr></thead>
+          <tbody>
+            <tr><td>Developer time (1 FT × 14 weeks)</td><td class="mono">$28,000 – $42,000</td></tr>
+            <tr><td>Claude API (dev + staging)</td><td class="mono">$200 – $400</td></tr>
+            <tr><td>Infra (Vercel + Supabase + Redis)</td><td class="mono">$150 – $300</td></tr>
+            <tr><td>Ad platform dev accounts</td><td class="mono">$0 (free tiers)</td></tr>
+            <tr><td><strong>Total Build Investment</strong></td><td><strong class="mono" style="color:var(--blue)">$29,000 – $43,000</strong></td></tr>
+            <tr><td><strong>Monthly Running Cost</strong></td><td><strong class="mono" style="color:var(--blue)">$300 – $600 / month</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3>Buy Landscape</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tool</th><th>Category</th><th>Price / mo</th><th>What It Covers</th><th>Critical Gap</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Jasper</strong></td><td>AI Copy</td><td class="mono">$49–$125</td><td>AI copy generation</td><td class="no">No ad platform publishing</td></tr>
+            <tr><td><strong>AdCreative.ai</strong></td><td>AI Copy</td><td class="mono">$29–$149</td><td>Ad creative generation</td><td class="no">No persona engine or planning</td></tr>
+            <tr><td><strong>Smartly.io</strong></td><td>AI Copy</td><td class="mono">Custom</td><td>Ad automation + publishing</td><td class="no">No AI brand analysis, very expensive</td></tr>
+            <tr><td><strong>n8n Cloud</strong></td><td>Automation</td><td class="mono">$20–$50</td><td>Workflow + connectors</td><td class="no">No AI reasoning layer, DIY everything</td></tr>
+            <tr><td><strong>Make</strong></td><td>Automation</td><td class="mono">$9–$29</td><td>Visual workflows</td><td class="no">Shallow AI, no multi-tenant</td></tr>
+            <tr><td><strong>HubSpot Mktg Hub</strong></td><td>Full-stack</td><td class="mono">$800–$3,200</td><td>Full marketing suite</td><td class="no">Generic, not AI-native</td></tr>
+            <tr><td><strong>Salesforce Mktg Cloud</strong></td><td>Full-stack</td><td class="mono">Custom</td><td>Enterprise campaigns</td><td class="no">18-month impl, $100K+ contracts</td></tr>
+            <tr><td><strong>Albert.ai</strong></td><td>Full-stack</td><td class="mono">Custom</td><td>AI ad management</td><td class="no">Black-box AI, no brand analysis</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="callout red">
+      <div class="callout-icon">❌</div>
+      <div class="callout-body">
+        <div class="callout-title">Why Not Buy</div>
+        <div class="callout-text">No single tool covers brand analysis + persona AI + ad publishing. Stitching tools costs $200–500/mo and still has major gaps. None provide multi-tenant workspace isolation out-of-the-box. The brand-to-campaign reasoning chain is the differentiator — buying eliminates the moat.</div>
+      </div>
+    </div>
+
+    <div class="callout green">
+      <div class="callout-icon">✅</div>
+      <div class="callout-body">
+        <div class="callout-title">Why Build with Claude MCP</div>
+        <div class="callout-text">14 weeks to a fully shippable product with one developer. $300–600/mo to operate vs $500–1,000/mo for a stitched buy stack with gaps. You own the AI reasoning layer — an extensible MCP tool surface you keep growing. White-label to agencies and sell as SaaS: $30K build cost → $50K ARR breakeven.</div>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ── 5. Architecture ── -->
+  <section class="section" id="architecture">
+    <div class="section-header">
+      <div class="section-num">05</div>
+      <h2>System Architecture</h2>
+    </div>
+
+    <div class="subsection">
+      <h3>Six-Layer Stack</h3>
+      <div class="layer-stack">
+        <div class="layer"><div class="layer-header"><span class="layer-num">01</span><span class="layer-name">Frontend Layer</span></div><div class="layer-tags"><span class="badge badge-blue">Next.js 14</span><span class="badge badge-slate">App Router</span><span class="badge badge-slate">Tailwind CSS</span><span class="badge badge-slate">Intake → Personas → Campaigns → Creatives → Publish → Analytics</span></div></div>
+        <div class="layer-arrow">↕</div>
+        <div class="layer"><div class="layer-header"><span class="layer-num">02</span><span class="layer-name">API + Auth Layer</span></div><div class="layer-tags"><span class="badge badge-blue">NextAuth</span><span class="badge badge-slate">Postgres RLS</span><span class="badge badge-slate">RBAC</span><span class="badge badge-slate">Audit Log</span><span class="badge badge-slate">Rate Limiting</span></div></div>
+        <div class="layer-arrow">↕</div>
+        <div class="layer"><div class="layer-header"><span class="layer-num">03</span><span class="layer-name">Orchestration Layer</span></div><div class="layer-tags"><span class="badge badge-amber">BullMQ</span><span class="badge badge-slate">Node.js</span><span class="badge badge-slate">scrape:job</span><span class="badge badge-slate">persona:job</span><span class="badge badge-slate">campaign:job</span><span class="badge badge-slate">creative:job</span><span class="badge badge-slate">publish:job</span></div></div>
+        <div class="layer-arrow">↕</div>
+        <div class="layer"><div class="layer-header"><span class="layer-num">04</span><span class="layer-name">Claude MCP Server</span></div><div class="layer-tags"><span class="badge badge-purple">@modelcontextprotocol/sdk</span><span class="badge badge-slate">analyze_website</span><span class="badge badge-slate">generate_personas</span><span class="badge badge-slate">plan_campaign</span><span class="badge badge-slate">generate_ad_copy</span><span class="badge badge-slate">publish_campaign</span><span class="badge badge-slate">get_performance</span></div></div>
+        <div class="layer-arrow">↕</div>
+        <div class="layer"><div class="layer-header"><span class="layer-num">05</span><span class="layer-name">Ad Platform Connectors</span></div><div class="layer-tags"><span class="badge badge-green">OAuth 2.0</span><span class="badge badge-slate">Google Ads API</span><span class="badge badge-slate">Meta Marketing API</span><span class="badge badge-slate">LinkedIn Ads API</span><span class="badge badge-slate">X Ads API</span><span class="badge badge-slate">TikTok (Roadmap)</span></div></div>
+        <div class="layer-arrow">↕</div>
+        <div class="layer"><div class="layer-header"><span class="layer-num">06</span><span class="layer-name">Data Layer</span></div><div class="layer-tags"><span class="badge badge-blue">Supabase</span><span class="badge badge-slate">Redis</span><span class="badge badge-slate">S3</span><span class="badge badge-slate">Workspaces</span><span class="badge badge-slate">Campaigns</span><span class="badge badge-slate">Brand Snapshots</span><span class="badge badge-slate">Performance</span></div></div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3>MCP Tool Definitions</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tool Name</th><th>Input Schema</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>analyze_website</code></td><td class="mono">url, depth</td><td>Puppeteer scrape + Claude Vision: extracts brand tokens, tone, palette, audience signals</td></tr>
+            <tr><td><code>generate_personas</code></td><td class="mono">brand_analysis, budget, platforms[]</td><td>Produces 3–5 personas with platform affinity, budget split, messaging hook</td></tr>
+            <tr><td><code>plan_campaign</code></td><td class="mono">personas[], budget, platforms[]</td><td>Per-persona × per-platform campaign: headline, copy, CTA, targeting, KPIs</td></tr>
+            <tr><td><code>generate_ad_copy</code></td><td class="mono">campaign_id, platform, persona</td><td>Writes 3 copy variants: Direct / Curiosity / Social Proof</td></tr>
+            <tr><td><code>create_ad_draft</code></td><td class="mono">campaign_id, platform</td><td>Creates draft on ad platform via SDK. No spend committed. Returns draft_id.</td></tr>
+            <tr><td><code>publish_campaign</code></td><td class="mono">campaign_id, platform, consent</td><td>Publishes approved draft. require_consent: true by default. Writes audit record.</td></tr>
+            <tr><td><code>get_performance</code></td><td class="mono">campaign_id, date_range</td><td>Pulls impressions, clicks, spend, conversions. Returns unified schema.</td></tr>
+            <tr><td><code>pause_campaign</code></td><td class="mono">campaign_id, platform</td><td>Pauses live campaign. Requires user confirmation.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3>Multi-tenant Data Model</h3>
+      <div class="code-block">
+        <div class="code-label">Postgres Schema + RLS</div>
+        <pre><span class="cmt">-- Workspace hierarchy</span>
+<span class="kw">workspaces</span>    (id uuid PK, name, slug, plan, created_at)
+  <span class="kw">users</span>       (id, workspace_id FK, role, email, oauth_tokens_enc)
+  <span class="kw">brands</span>      (id, workspace_id FK, url, brand_snapshot jsonb)
+    <span class="kw">personas</span>  (id, brand_id FK, name, traits jsonb, platform_affinity jsonb, budget_pct)
+    <span class="kw">campaigns</span> (id, brand_id FK, status, budget, platform, flight_start, flight_end)
+      <span class="kw">ad_drafts</span>   (id, campaign_id FK, variant, copy jsonb, targeting jsonb, consent_at)
+      <span class="kw">performance</span> (id, campaign_id FK, date, impressions, clicks, spend, conversions)
+  <span class="kw">audit_log</span>   (id, workspace_id, user_id, action, resource_id, metadata jsonb)
+
+<span class="cmt">-- Row Level Security enforced at DB layer</span>
+<span class="fn">CREATE POLICY</span> workspace_isolation <span class="kw">ON</span> campaigns
+  <span class="kw">USING</span> (workspace_id = <span class="fn">current_setting</span>(<span class="str">'app.workspace_id'</span>)::<span class="kw">uuid</span>);</pre>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3>RBAC Permissions</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Action</th><th>Owner</th><th>Manager</th><th>Viewer</th></tr></thead>
+          <tbody>
+            <tr><td>Create workspace / invite users</td><td class="yes">✅</td><td class="no">❌</td><td class="no">❌</td></tr>
+            <tr><td>Analyze brand</td><td class="yes">✅</td><td class="yes">✅</td><td class="no">❌</td></tr>
+            <tr><td>Generate personas &amp; campaigns</td><td class="yes">✅</td><td class="yes">✅</td><td class="no">❌</td></tr>
+            <tr><td>Generate ad copy</td><td class="yes">✅</td><td class="yes">✅</td><td class="no">❌</td></tr>
+            <tr><td>Publish campaign</td><td class="yes">✅</td><td class="yes">✅</td><td class="no">❌</td></tr>
+            <tr><td>View campaigns &amp; analytics</td><td class="yes">✅</td><td class="yes">✅</td><td class="yes">✅</td></tr>
+            <tr><td>Manage billing</td><td class="yes">✅</td><td class="no">❌</td><td class="no">❌</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ── 6. Campaign Generation ── -->
+  <section class="section" id="campaigns">
+    <div class="section-header">
+      <div class="section-num">06</div>
+      <h2>Campaign Generation — Deep Dive</h2>
+    </div>
+
+    <div class="subsection">
+      <h3>The Four Claude Prompts</h3>
+
+      <h4>Prompt 1 — Brand Analysis</h4>
+      <div class="code-block">
+        <div class="code-label">System Prompt</div>
+        <pre><span class="cmt">You are a brand strategist AI. When given a website URL/domain, infer likely</span>
+<span class="cmt">brand characteristics. Respond ONLY with a valid JSON object — no markdown,</span>
+<span class="cmt">no backticks, no explanation. Shape:</span>
+{
+  <span class="prop">"industry"</span>: <span class="str">"..."</span>,
+  <span class="prop">"tone"</span>:     <span class="str">"..."</span>,
+  <span class="prop">"colors"</span>:   [<span class="str">"#hex1"</span>, <span class="str">"#hex2"</span>],
+  <span class="prop">"audience"</span>: <span class="str">"..."</span>,
+  <span class="prop">"usp"</span>:      <span class="str">"..."</span>,
+  <span class="prop">"keywords"</span>: [<span class="str">"k1"</span>, <span class="str">"k2"</span>, <span class="str">"k3"</span>]
+}</pre>
+      </div>
+
+      <h4>Prompt 2 — Persona Generation</h4>
+      <div class="code-block">
+        <div class="code-label">System Prompt</div>
+        <pre><span class="cmt">You are an audience strategy expert. Respond ONLY with a JSON array.</span>
+<span class="cmt">Generate 4 personas with this shape:</span>
+[{
+  <span class="prop">"name"</span>:          <span class="str">"..."</span>,
+  <span class="prop">"age"</span>:           <span class="str">"25–35"</span>,
+  <span class="prop">"role"</span>:          <span class="str">"..."</span>,
+  <span class="prop">"platforms"</span>:    [<span class="str">"..."</span>],
+  <span class="prop">"budgetPct"</span>:     <span class="num">25</span>,          <span class="cmt">// must sum to 100</span>
+  <span class="prop">"painPoint"</span>:    <span class="str">"..."</span>,
+  <span class="prop">"messagingHook"</span>: <span class="str">"..."</span>,
+  <span class="prop">"icon"</span>:          <span class="str">"◈"</span>         <span class="cmt">// one of: ◈ ⬡ ◇ △</span>
+}]</pre>
+      </div>
+
+      <h4>Prompt 3 — Campaign Planning</h4>
+      <div class="code-block">
+        <div class="code-label">System Prompt</div>
+        <pre><span class="cmt">You are a performance marketing strategist. Respond ONLY with a JSON array.</span>
+<span class="cmt">One item per persona×platform combination:</span>
+[{
+  <span class="prop">"persona"</span>:       <span class="str">"..."</span>,
+  <span class="prop">"platform"</span>:      <span class="str">"..."</span>,
+  <span class="prop">"format"</span>:        <span class="str">"..."</span>,
+  <span class="prop">"monthlyBudget"</span>: <span class="num">500</span>,
+  <span class="prop">"headline"</span>:      <span class="str">"..."</span>,  <span class="cmt">// max 40 chars</span>
+  <span class="prop">"primaryCopy"</span>:   <span class="str">"..."</span>,  <span class="cmt">// max 90 chars</span>
+  <span class="prop">"cta"</span>:           <span class="str">"..."</span>,  <span class="cmt">// max 20 chars</span>
+  <span class="prop">"targeting"</span>: { <span class="prop">"age"</span>: <span class="str">"..."</span>, <span class="prop">"interests"</span>: [<span class="str">"..."</span>] },
+  <span class="prop">"kpis"</span>: { <span class="prop">"ctr"</span>: <span class="str">"2.1%"</span>, <span class="prop">"cpc"</span>: <span class="str">"$1.20"</span>, <span class="prop">"reach"</span>: <span class="str">"45K"</span> }
+}]</pre>
+      </div>
+
+      <h4>Prompt 4 — Copy Variant Writing</h4>
+      <div class="code-block">
+        <div class="code-label">System Prompt</div>
+        <pre><span class="cmt">You are a world-class copywriter. Respond ONLY with a JSON object.</span>
+{
+  <span class="prop">"variants"</span>: [
+    { <span class="prop">"label"</span>: <span class="str">"Direct"</span>,       <span class="prop">"headline"</span>: <span class="str">"..."</span>, <span class="prop">"body"</span>: <span class="str">"..."</span>, <span class="prop">"cta"</span>: <span class="str">"..."</span> },
+    { <span class="prop">"label"</span>: <span class="str">"Curiosity"</span>,    <span class="prop">"headline"</span>: <span class="str">"..."</span>, <span class="prop">"body"</span>: <span class="str">"..."</span>, <span class="prop">"cta"</span>: <span class="str">"..."</span> },
+    { <span class="prop">"label"</span>: <span class="str">"Social Proof"</span>, <span class="prop">"headline"</span>: <span class="str">"..."</span>, <span class="prop">"body"</span>: <span class="str">"..."</span>, <span class="prop">"cta"</span>: <span class="str">"..."</span> }
+  ]
+}
+<span class="cmt">Variants must be meaningfully different in angle and approach.</span>
+<span class="cmt">Headlines: max 40 chars. Body: max 90 chars. CTA: max 20 chars.</span></pre>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3>Copy Variant Strategy</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Variant</th><th>Angle</th><th>Best For</th><th>Example Hook</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Direct</strong></td><td>States the benefit plainly</td><td>Bottom-funnel, high-intent</td><td>"Cut campaign setup from days to minutes"</td></tr>
+            <tr><td><strong>Curiosity</strong></td><td>Opens a loop or asks a question</td><td>Top-funnel, cold audiences</td><td>"What if your next campaign wrote itself?"</td></tr>
+            <tr><td><strong>Social Proof</strong></td><td>Leverages numbers or trust signals</td><td>Mid-funnel, consideration</td><td>"10,000+ marketers already use this"</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3>Platform Ad Format Specs</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Platform</th><th>Format</th><th>Headline Limit</th><th>Body Limit</th><th>CTA Options</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Google Search</strong></td><td>Text ad</td><td>30 chars × 3</td><td>90 chars × 2</td><td>Custom</td></tr>
+            <tr><td><strong>Meta Feed</strong></td><td>Single image / carousel</td><td>40 chars</td><td>125 chars</td><td>20 options</td></tr>
+            <tr><td><strong>LinkedIn</strong></td><td>Sponsored Content</td><td>70 chars</td><td>150 chars</td><td>18 options</td></tr>
+            <tr><td><strong>X / Twitter</strong></td><td>Promoted Post</td><td>70 chars</td><td>280 chars</td><td>Custom</td></tr>
+            <tr><td><strong>TikTok</strong></td><td>In-feed video</td><td>80 chars</td><td>N/A</td><td>10 options</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ── 7. Tech Stack ── -->
+  <section class="section" id="stack">
+    <div class="section-header">
+      <div class="section-num">07</div>
+      <h2>Tech Stack</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Concern</th><th>Choice</th><th>Rationale</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Frontend</strong></td><td><span class="badge badge-blue">Next.js 14 + Tailwind</span></td><td>App Router, server components, streaming, edge-ready</td></tr>
+          <tr><td><strong>AI Orchestration</strong></td><td><span class="badge badge-purple">Claude MCP</span></td><td>Native tool calling, streaming, multi-step reasoning</td></tr>
+          <tr><td><strong>Website Scraping</strong></td><td><span class="badge badge-slate">Puppeteer + Claude Vision</span></td><td>Screenshot + structured extraction in one pass</td></tr>
+          <tr><td><strong>Background Jobs</strong></td><td><span class="badge badge-amber">BullMQ + Redis</span></td><td>Reliable async queue for long-running AI jobs</td></tr>
+          <tr><td><strong>Authentication</strong></td><td><span class="badge badge-slate">NextAuth.js</span></td><td>Session management + per-platform OAuth 2.0</td></tr>
+          <tr><td><strong>Database</strong></td><td><span class="badge badge-green">Supabase + RLS</span></td><td>Row-level security for multi-tenant isolation</td></tr>
+          <tr><td><strong>Ad: Google Ads</strong></td><td><span class="badge badge-slate">google-ads-api</span></td><td>Official Node.js SDK, wraps gRPC API</td></tr>
+          <tr><td><strong>Ad: Meta</strong></td><td><span class="badge badge-slate">meta-ads-sdk</span></td><td>Official Marketing API client</td></tr>
+          <tr><td><strong>Ad: LinkedIn</strong></td><td><span class="badge badge-slate">linkedin-api-client</span></td><td>LinkedIn Marketing API v2</td></tr>
+          <tr><td><strong>Monitoring</strong></td><td><span class="badge badge-slate">Sentry + Datadog</span></td><td>Error tracking + APM</td></tr>
+          <tr><td><strong>Deployment</strong></td><td><span class="badge badge-slate">Vercel + Railway</span></td><td>Zero-config deploys, auto-scaling</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ── 8. Deployment ── -->
+  <section class="section" id="deployment">
+    <div class="section-header">
+      <div class="section-num">08</div>
+      <h2>Deployment Guide</h2>
+    </div>
+
+    <div class="callout amber">
+      <div class="callout-icon">🔑</div>
+      <div class="callout-body">
+        <div class="callout-title">Security: Never expose the Claude API key in the browser</div>
+        <div class="callout-text">All Claude API calls must be proxied through a Next.js API route. See the proxy route code below — this is mandatory before any public deployment.</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3>Environment Variables</h3>
+      <div class="code-block">
+        <div class="code-label">.env.local</div>
+        <pre><span class="cmt"># Claude API</span>
+<span class="prop">ANTHROPIC_API_KEY</span>=sk-ant-...
+
+<span class="cmt"># Supabase</span>
+<span class="prop">NEXT_PUBLIC_SUPABASE_URL</span>=https://xxx.supabase.co
+<span class="prop">NEXT_PUBLIC_SUPABASE_ANON_KEY</span>=eyJ...
+<span class="prop">SUPABASE_SERVICE_ROLE_KEY</span>=eyJ...
+
+<span class="cmt"># Auth</span>
+<span class="prop">NEXTAUTH_SECRET</span>=your-secret-here
+<span class="prop">NEXTAUTH_URL</span>=https://yourdomain.com
+
+<span class="cmt"># Redis</span>
+<span class="prop">REDIS_URL</span>=redis://...
+
+<span class="cmt"># Ad Platform OAuth</span>
+<span class="prop">GOOGLE_ADS_CLIENT_ID</span>=...
+<span class="prop">GOOGLE_ADS_CLIENT_SECRET</span>=...
+<span class="prop">META_APP_ID</span>=...
+<span class="prop">META_APP_SECRET</span>=...
+<span class="prop">LINKEDIN_CLIENT_ID</span>=...
+<span class="prop">LINKEDIN_CLIENT_SECRET</span>=...</pre>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3>Claude API Proxy Route (Required)</h3>
+      <div class="code-block">
+        <div class="code-label">app/api/claude/route.ts</div>
+        <pre><span class="kw">import</span> { NextRequest, NextResponse } <span class="kw">from</span> <span class="str">'next/server'</span>;
+<span class="kw">import</span> { getServerSession } <span class="kw">from</span> <span class="str">'next-auth'</span>;
+<span class="kw">import</span> { ratelimit } <span class="kw">from</span> <span class="str">'@/lib/redis'</span>;
+
+<span class="kw">export async function</span> <span class="fn">POST</span>(req: NextRequest) {
+  <span class="cmt">// 1. Auth check</span>
+  <span class="kw">const</span> session = <span class="kw">await</span> <span class="fn">getServerSession</span>(authOptions);
+  <span class="kw">if</span> (!session) <span class="kw">return</span> NextResponse.<span class="fn">json</span>({ error: <span class="str">'Unauthorized'</span> }, { status: <span class="num">401</span> });
+
+  <span class="cmt">// 2. Rate limit per workspace</span>
+  <span class="kw">const</span> { success } = <span class="kw">await</span> ratelimit.<span class="fn">limit</span>(session.user.workspaceId);
+  <span class="kw">if</span> (!success) <span class="kw">return</span> NextResponse.<span class="fn">json</span>({ error: <span class="str">'Rate limited'</span> }, { status: <span class="num">429</span> });
+
+  <span class="cmt">// 3. Proxy with server-side key — key never touches the browser</span>
+  <span class="kw">const</span> body = <span class="kw">await</span> req.<span class="fn">json</span>();
+  <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'https://api.anthropic.com/v1/messages'</span>, {
+    method: <span class="str">'POST'</span>,
+    headers: {
+      <span class="str">'Content-Type'</span>:      <span class="str">'application/json'</span>,
+      <span class="str">'x-api-key'</span>:        process.env.<span class="prop">ANTHROPIC_API_KEY</span>!,
+      <span class="str">'anthropic-version'</span>: <span class="str">'2023-06-01'</span>,
+    },
+    body: <span class="fn">JSON.stringify</span>(body),
+  });
+  <span class="kw">return</span> NextResponse.<span class="fn">json</span>(<span class="kw">await</span> response.<span class="fn">json</span>());
+}</pre>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3>Vercel Deployment</h3>
+      <div class="code-block">
+        <div class="code-label">Terminal</div>
+        <pre>npm i -g vercel
+vercel deploy
+vercel env add ANTHROPIC_API_KEY
+vercel env add NEXT_PUBLIC_SUPABASE_URL
+<span class="cmt"># add remaining env vars, then promote</span>
+vercel --prod</pre>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ── 9. MCP Server ── -->
+  <section class="section" id="mcp">
+    <div class="section-header">
+      <div class="section-num">09</div>
+      <h2>MCP Server Implementation</h2>
+    </div>
+
+    <div class="subsection">
+      <h3>Publish Tool — Consent Gate Pattern</h3>
+      <div class="code-block">
+        <div class="code-label">tools/publish-campaign.ts</div>
+        <pre><span class="kw">export const</span> publishCampaign = {
+  handler: <span class="kw">async</span> (args) => {
+    <span class="cmt">// 1. Consent record MUST exist before any publish action</span>
+    <span class="kw">const</span> consent = <span class="kw">await</span> db.<span class="fn">query</span>(
+      <span class="str">`SELECT * FROM audit_log
+       WHERE resource_id = $1 AND action = 'consent_given'
+       ORDER BY created_at DESC LIMIT 1`</span>,
+      [args.campaign_id]
+    );
+    <span class="kw">if</span> (!consent.rows.length) {
+      <span class="kw">return</span> { error: <span class="str">'CONSENT_REQUIRED'</span>,
+        message: <span class="str">'User must explicitly authorize before publishing.'</span> };
+    }
+
+    <span class="cmt">// 2. Publish via platform SDK (not raw API call)</span>
+    <span class="kw">const</span> draft  = <span class="kw">await</span> db.<span class="fn">getApprovedDraft</span>(args.campaign_id);
+    <span class="kw">const</span> result = <span class="kw">await</span> platformSDK[args.platform].<span class="fn">publishDraft</span>(draft.platform_draft_id);
+
+    <span class="cmt">// 3. Write immutable audit record</span>
+    <span class="kw">await</span> db.<span class="fn">query</span>(
+      <span class="str">`INSERT INTO audit_log (workspace_id, action, resource_id, metadata)
+       VALUES ($1, 'campaign_published', $2, $3)`</span>,
+      [args.workspace_id, args.campaign_id, { platform: args.platform, result }]
+    );
+    <span class="kw">return</span> { success: <span class="kw">true</span>, platform_campaign_id: result.id, status: <span class="str">'live'</span> };
+  }
+};</pre>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ── 10. Security ── -->
+  <section class="section" id="security">
+    <div class="section-header">
+      <div class="section-num">10</div>
+      <h2>Security &amp; Compliance</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Area</th><th>Mechanism</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Tenant isolation</strong></td><td>Postgres RLS</td><td>workspace_id scoping at DB layer — app bugs cannot leak cross-tenant data</td></tr>
+          <tr><td><strong>Session auth</strong></td><td>NextAuth</td><td>Workspace membership validated on every API request</td></tr>
+          <tr><td><strong>OAuth token storage</strong></td><td>AES-256 encryption</td><td>Tokens encrypted at rest, per-workspace key</td></tr>
+          <tr><td><strong>Consent gate</strong></td><td>Audit log check</td><td>publish_campaign tool verifies consent record exists before any API call</td></tr>
+          <tr><td><strong>Audit log</strong></td><td>Append-only table</td><td>Users cannot delete or modify consent/publish records</td></tr>
+          <tr><td><strong>OAuth scopes</strong></td><td>Minimum privilege</td><td>Request ads:write, never account:admin</td></tr>
+          <tr><td><strong>API key security</strong></td><td>Server-side proxy</td><td>Claude API key never exposed in client-side code</td></tr>
+          <tr><td><strong>Rate limiting</strong></td><td>Upstash Redis</td><td>Per-workspace request limits on /api/claude proxy</td></tr>
+          <tr><td><strong>Data retention</strong></td><td>Auto-purge policy</td><td>Screenshots purged after 30 days; PII never stored on CampaignOS</td></tr>
+          <tr><td><strong>Compliance</strong></td><td>SOC 2 Type II path</td><td>Achievable by Phase 5 via Supabase compliance tooling</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ── 11. Risks ── -->
+  <section class="section" id="risks">
+    <div class="section-header">
+      <div class="section-num">11</div>
+      <h2>Risks &amp; Mitigations</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Risk</th><th>Likelihood</th><th>Impact</th><th>Mitigation</th></tr></thead>
+        <tbody>
+          <tr><td>Ad platform API breaking changes</td><td class="warn">Medium</td><td class="no">High</td><td>SDK abstraction layer; pin versions; monitor changelogs</td></tr>
+          <tr><td>Claude API latency on large brand analysis</td><td class="warn">Medium</td><td class="warn">Medium</td><td>Async job queue; streaming progress to UI</td></tr>
+          <tr><td>MCP ecosystem immaturity</td><td class="yes">Low</td><td class="warn">Medium</td><td>Wrap MCP tools with fallback REST calls</td></tr>
+          <tr><td>Multi-tenant data leak via app bug</td><td class="yes">Low</td><td class="no">High</td><td>RLS enforced at DB layer; pen test before launch</td></tr>
+          <tr><td>OAuth token expiry causing publish failures</td><td class="no">High</td><td class="yes">Low</td><td>Proactive token refresh; retry queue with alerts</td></tr>
+          <tr><td>Claude API cost overrun at scale</td><td class="warn">Medium</td><td class="warn">Medium</td><td>Cache brand analyses 7 days; batch persona generation</td></tr>
+          <tr><td>Agency client ad overspend</td><td class="yes">Low</td><td class="no">High</td><td>Hard budget caps in draft creation; daily spend alerts</td></tr>
+          <tr><td>Wrong brand analysis for unknown domain</td><td class="warn">Medium</td><td class="warn">Medium</td><td>Allow full manual override at every step</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ── 12. Next Steps ── -->
+  <section class="section" id="nextsteps">
+    <div class="section-header">
+      <div class="section-num">12</div>
+      <h2>Next Steps</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Phase</th><th>Timeline</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Immediate</strong></td><td><span class="badge badge-blue">Week 1</span></td><td>Scaffold Next.js + Supabase + RLS. Implement analyze_website MCP tool. Build intake form with streaming brand analysis. Set up /api/claude proxy with auth + rate limiting.</td></tr>
+          <tr><td><strong>Short-term</strong></td><td><span class="badge badge-slate">Wk 2–5</span></td><td>Complete persona + campaign + copy variant MCP tools. Add workspace management and RBAC. Build strategy review UI with live ad previews.</td></tr>
+          <tr><td><strong>Medium-term</strong></td><td><span class="badge badge-slate">Wk 6–11</span></td><td>Integrate Google Ads and Meta SDKs as MCP connectors. Implement consent-gated publish flow with audit log. Build unified analytics dashboard.</td></tr>
+          <tr><td><strong>Launch</strong></td><td><span class="badge badge-green">Wk 12–14</span></td><td>White-label theming. API product surface. Security audit and penetration test. Documentation and onboarding flows.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ── 13. Appendix ── -->
+  <section class="section" id="appendix">
+    <div class="section-header">
+      <div class="section-num">13</div>
+      <h2>Appendix</h2>
+    </div>
+
+    <div class="subsection">
+      <h3>Glossary</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+          <tbody>
+            <tr><td><strong>MCP</strong></td><td>Model Context Protocol — Anthropic's open protocol for connecting AI models to external tools and data sources</td></tr>
+            <tr><td><strong>RLS</strong></td><td>Row Level Security — Postgres feature enforcing data access at the database layer, not the application layer</td></tr>
+            <tr><td><strong>RBAC</strong></td><td>Role-Based Access Control — permissions determined by user role (Owner / Manager / Viewer)</td></tr>
+            <tr><td><strong>Ad Draft</strong></td><td>A campaign staged on the ad platform with no spend committed — for review before publish</td></tr>
+            <tr><td><strong>Consent Gate</strong></td><td>A mandatory user confirmation step before any action that incurs real ad spend</td></tr>
+            <tr><td><strong>Persona</strong></td><td>AI-generated audience segment with demographic, psychographic, and platform affinity data</td></tr>
+            <tr><td><strong>Copy Variant</strong></td><td>One of three ad copy versions (Direct / Curiosity / Social Proof) for the same campaign</td></tr>
+            <tr><td><strong>Workspace</strong></td><td>A multi-tenant isolation unit — one workspace per agency or brand client</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3>Supported Ad Platforms (v1.0)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Platform</th><th>API</th><th>Auth</th><th>Draft</th><th>Performance Pull</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Google Ads</strong></td><td>Google Ads API v16</td><td>OAuth 2.0</td><td class="yes">✅</td><td class="yes">✅</td></tr>
+            <tr><td><strong>Meta (FB / IG)</strong></td><td>Meta Marketing API v19</td><td>OAuth 2.0</td><td class="yes">✅</td><td class="yes">✅</td></tr>
+            <tr><td><strong>LinkedIn</strong></td><td>LinkedIn Marketing API v2</td><td>OAuth 2.0</td><td class="yes">✅</td><td class="yes">✅</td></tr>
+            <tr><td><strong>X (Twitter)</strong></td><td>X Ads API v12</td><td>OAuth 1.0a / 2.0</td><td class="yes">✅</td><td class="yes">✅</td></tr>
+            <tr><td><strong>TikTok</strong></td><td>TikTok for Business API</td><td>OAuth 2.0</td><td class="warn">Roadmap</td><td class="warn">Roadmap</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3>Reference Links</h3>
+      <ul class="doc-list">
+        <li><strong>Anthropic MCP Docs:</strong> https://modelcontextprotocol.io</li>
+        <li><strong>Claude API Reference:</strong> https://docs.anthropic.com</li>
+        <li><strong>Supabase RLS Guide:</strong> https://supabase.com/docs/guides/auth/row-level-security</li>
+        <li><strong>Google Ads API:</strong> https://developers.google.com/google-ads/api/docs/start</li>
+        <li><strong>Meta Marketing API:</strong> https://developers.facebook.com/docs/marketing-apis</li>
+        <li><strong>LinkedIn Marketing API:</strong> https://learn.microsoft.com/en-us/linkedin/marketing/</li>
+        <li><strong>NextAuth.js:</strong> https://next-auth.js.org</li>
+        <li><strong>BullMQ:</strong> https://docs.bullmq.io</li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<button class="copy-btn" onclick="window.print()">🖨 Print / Save PDF</button>
+
+</body>
+</html>
